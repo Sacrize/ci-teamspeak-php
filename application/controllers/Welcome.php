@@ -1,7 +1,13 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Welcome extends CI_Controller {
+class Welcome extends CI_Controller 
+{
+	public function __construct() 
+	{
+        parent::__construct();
+        $this->load->library('teamspeak3_lib');
+	}
 
 	/**
 	 * Index Page for this controller.
@@ -20,6 +26,15 @@ class Welcome extends CI_Controller {
 	 */
 	public function index()
 	{
-		$this->load->view('welcome_message');
+		try {
+			$this->vserver = $this->teamspeak3_lib->factory($this->config->item('ts_connection_string'));
+			$channels = $this->vserver->channelList();
+
+			foreach ($channels as $channel) {
+				print $channel . '<br />';
+			}
+		} catch (Exception $e) {
+			echo 'Caught exception: ',  $e->getMessage(), "\n";
+		}
 	}
 }
